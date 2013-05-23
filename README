@@ -1,0 +1,38 @@
+CS637
+Mateusz Stankiewicz
+Assignment 6
+
+This program displays a the bounded bunny model for assignment 5.
+Here are the keys used to operate the program:
+Keys: 
+q - Increase camera height
+a - Decrease camera height
+w - Increase camera radius
+s - Decrease camera radius
+e - Increase camera speed
+d - Decrease camera speed
+r - Increase light height
+f - Decrease light height
+t - Increase light radius
+g - Decrease light radius
+y - Increase light speed
+h - Decrease light speed
+Mouse: 
+Right click to access the projection, camera start/stop menu, materials, and shading menus
+
+To compile and run the program:
+make
+
+Note: If the program complains go to the Common directory and type ./Compile to create the InitShader.o object
+
+To execute the program:
+make run
+
+To clean:
+make clean
+
+To develop this program I using a native install of ubuntu 12.04 on my laptop.
+My laptop has an NVidia 580m GPU which supports OpenGL version 4.3.
+
+The compiler I used is:
+g++ (Ubuntu/Linaro 4.6.3-1ubuntu5) 4.6.3
