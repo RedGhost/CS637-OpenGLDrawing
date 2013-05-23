@@ -12,7 +12,9 @@ public:
     static GLuint flatProgram;
     static GLuint controlPointProgram;
     static GLuint activeProgram;
-    static GLint uBezierPatchView;
+    static GLint uModelViewControlPoint;
+    static GLint uProjectionControlPoint;
+    static GLint uModelView;
     static GLint uProjection;
     static GLint uDiffuse;
     static GLint uAmbient;
@@ -35,22 +37,27 @@ public:
     virtual void selectPointToUp();
     virtual void selectPointToDown();
     virtual void changePointBy(GLfloat dx, GLfloat dy, GLfloat dz);
+    virtual void changeResolution(GLint resolution);
 
     static void Initialize();
     static void Deinitialize();
 
 private:
+    void recalculateVertices();
+
     GLint _currentPoint;
-    std::vector< std::vector< vec3 > > _normals;
+    std::vector< std::vector< vec3 > > _normalGeneration;
     vec3 _controlPoints[16];
-    std::vector<vec3> _vertices;
     std::vector<GLuint> _faces;
 
     bool _initialized;
-    GLuint vbo, vao, ebo;
+    GLuint vboControlPoints, vboVertices, vaoControlPoints, vaoVertices, eboVertices;
     vec3 _diffuse, _ambient, _specular;
     GLint _selectedPoint;
     GLfloat _shininess;
+    GLint _resolution;
+    vec3 * _vertices;
+    vec3 * _normals;
 };
 
 #endif

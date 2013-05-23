@@ -9,7 +9,9 @@ GLuint BezierPatch::activeProgram = 0;
 GLuint BezierPatch::phongProgram = 0;
 GLuint BezierPatch::flatProgram = 0;
 GLuint BezierPatch::controlPointProgram = 0;
-GLint BezierPatch::uBezierPatchView = 0;
+GLint BezierPatch::uModelViewControlPoint = 0;
+GLint BezierPatch::uProjectionControlPoint = 0;
+GLint BezierPatch::uModelView = 0;
 GLint BezierPatch::uProjection = 0;
 GLint BezierPatch::uLightPosition = 0;
 GLint BezierPatch::uDiffuse = 0;
@@ -21,6 +23,7 @@ GLint BezierPatch::uEyePosition = 0;
 BezierPatch :: BezierPatch() {
     _currentPoint = 0;
     _selectedPoint = 0;
+    _resolution = 10;
 }
 
 void BezierPatch :: addControlPoint(vec3 point) {
@@ -29,11 +32,11 @@ void BezierPatch :: addControlPoint(vec3 point) {
 }
 
 void BezierPatch::initialize() {
-  glGenVertexArrays( 1, &vao);
-  glBindVertexArray( vao );
+  glGenVertexArrays( 1, &vaoControlPoints);
+  glBindVertexArray( vaoControlPoints );
 
-  glGenBuffers(1, &vbo);
-  glBindBuffer( GL_ARRAY_BUFFER, vbo);
+  glGenBuffers( 1, &vboControlPoints );
+  glBindBuffer( GL_ARRAY_BUFFER, vboControlPoints );
   glBufferData( GL_ARRAY_BUFFER, 32 * sizeof(vec3), NULL, GL_STATIC_DRAW);
   glBufferSubData( GL_ARRAY_BUFFER, 0, 16 * sizeof(vec3), _controlPoints);
 
@@ -49,37 +52,6 @@ void BezierPatch::initialize() {
 
   glBufferSubData( GL_ARRAY_BUFFER, 16 * sizeof(vec3), 16 * sizeof(vec3), colors);
 
-/*
-  for(int i = 0; i< 16; i++) {
-    cout << _controlPoints[i] << endl;
-  }
-
-  glGenBuffers( 1, &vbo);  
-  vec3 * vertices = &(_vertices[0]);
-  vec3 * normals = (vec3 *) malloc(_normals.size() * sizeof(vec3));
-  int i = 0;
-  for(vector< vector< vec3 > >::iterator itr1 = _normals.begin(); itr1 != _normals.end(); itr1++) {
-    vec3 normal = vec3(0.0f, 0.0f, 0.0f);
-    for(vector<vec3>::iterator itr2 = itr1->begin(); itr2 != itr1->end(); itr2++) {
-      normal += *(itr2);
-    }
-    normals[i] = normal / itr1->size();
-    i++;
-  }
-
-  glBindBuffer( GL_ARRAY_BUFFER, vbo );
-
-  glBufferData( GL_ARRAY_BUFFER, (_vertices.size() + _normals.size()) * sizeof(vec3), NULL, GL_STATIC_DRAW );
-  glBufferSubData( GL_ARRAY_BUFFER, 0, _vertices.size() * sizeof(vec3), vertices);
-  glBufferSubData( GL_ARRAY_BUFFER, _vertices.size() * sizeof(vec3), _normals.size() * sizeof(vec3), normals);
-
-  free(normals);
-
-  glGenBuffers( 1, &ebo );
-  GLuint * faces = &(_faces[0]);
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ebo );
-  glBufferData( GL_ELEMENT_ARRAY_BUFFER, _faces.size()  * sizeof(GLuint), faces, GL_STATIC_DRAW );
-*/
   GLuint point = glGetAttribLocation( controlPointProgram, "vPoint" );
   glVertexAttribPointer( point, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0) );
   glEnableVertexAttribArray( point );
@@ -88,17 +60,32 @@ void BezierPatch::initialize() {
   glVertexAttribPointer( color, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(16 * sizeof(vec3)) );
   glEnableVertexAttribArray( color );
 
+  glGenVertexArrays( 1, &vaoVertices );
+  glBindVertexArray( vaoVertices );
+
+  glGenBuffers( 1, &vboVertices );
+  glGenBuffers( 1, &eboVertices );
+  glBindBuffer( GL_ARRAY_BUFFER, vboVertices );
+
+  GLuint bezierPoint = glGetAttribLocation( activeProgram, "vPoint" );
+  glVertexAttribPointer( bezierPoint, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0) );
+  glEnableVertexAttribArray( point );
+
+  GLuint bezierNormal = glGetAttribLocation( activeProgram, "vNormal" );
+  glVertexAttribPointer( bezierNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET((_resolution * _resolution) * sizeof(vec3)) );
+  glEnableVertexAttribArray( bezierNormal );
+
   _initialized = true;
 }
 
 void BezierPatch :: draw(mat4 modelView, mat4 projection, vec4 eyePosition, vec4 lightPosition, vec3 diffuse, vec3 ambient, vec3 specular) {
   if(_initialized) {
     glUseProgram( controlPointProgram );
-    glBindVertexArray( vao );
-    glBindBuffer( GL_ARRAY_BUFFER, vbo );
+    glBindVertexArray( vaoControlPoints );
+    glBindBuffer( GL_ARRAY_BUFFER, vboControlPoints );
 
-    glUniformMatrix4fv(uBezierPatchView, 1, GL_TRUE, modelView);
-    glUniformMatrix4fv(uProjection, 1, GL_TRUE, projection);
+    glUniformMatrix4fv(uModelViewControlPoint, 1, GL_TRUE, modelView);
+    glUniformMatrix4fv(uProjectionControlPoint, 1, GL_TRUE, projection);
 
     glBufferSubData( GL_ARRAY_BUFFER, 0, 16 * sizeof(vec3), _controlPoints);
 
@@ -113,31 +100,31 @@ void BezierPatch :: draw(mat4 modelView, mat4 projection, vec4 eyePosition, vec4
     }
 
     glBufferSubData( GL_ARRAY_BUFFER, 16 * sizeof(vec3), 16 * sizeof(vec3), colors);
-
     glDrawArrays( GL_POINTS, 0, 16 ); 
-  /*  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ebo );
 
     glUseProgram( activeProgram );
+    glBindVertexArray( vaoVertices );
+    glBindBuffer( GL_ARRAY_BUFFER, vboVertices );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, eboVertices );
 
-    glUniformMatrix4fv(uBezierPatchView, 1, GL_TRUE, modelView);
+    //draw vertices
+    glUniformMatrix4fv(uModelView, 1, GL_TRUE, modelView);
     glUniformMatrix4fv(uProjection, 1, GL_TRUE, projection);
-    glUniform4fv(uLightPosition1, 1, lightPosition1);
-    glUniform3fv(uDiffuse1, 1, diffuse1 * _diffuse );
-    glUniform3fv(uAmbient1, 1, ambient1 * _ambient );
-    glUniform3fv(uSpecular1, 1, specular1 * _specular );
-    glUniform4fv(uLightPosition2, 1, lightPosition2);
-    glUniform3fv(uDiffuse2, 1, diffuse2 * _diffuse );
-    glUniform3fv(uAmbient2, 1, ambient2 * _ambient );
-    glUniform3fv(uSpecular2, 1, specular2 * _specular );
-    glUniform4fv(uLightPosition3, 1, lightPosition3);
-    glUniform3fv(uDiffuse3, 1, diffuse3 * _diffuse );
-    glUniform3fv(uAmbient3, 1, ambient3 * _ambient );
-    glUniform3fv(uSpecular3, 1, specular3 * _specular );
+    glUniform4fv(uLightPosition, 1, lightPosition3);
+    glUniform3fv(uDiffuse, 1, diffuse * _diffuse );
+    glUniform3fv(uAmbient, 1, ambient * _ambient );
+    glUniform3fv(uSpecular, 1, specular * _specular );
     glUniform4fv(uEyePosition, 1, eyePosition);
     glUniform1f(uShininess, _shininess);
 
-    glDrawElements( GL_TRIANGLES, _faces.size(), GL_UNSIGNED_INT, 0 );
- */ }
+    glBufferData( GL_ARRAY_BUFFER, (2 * _resolution * _resolution) * sizeof(vec3), NULL, GL_STATIC_DRAW);
+    glBufferSubData( GL_ARRAY_BUFFER, 0, (_resolution * _resolution) * sizeof(vec3), _vertices);
+    glBufferSubData( GL_ARRAY_BUFFER, (_resolution * _resolution) * sizeof(vec3), (_resolution * _resolution) * sizeof(vec3), _normals);
+
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, 
+
+    glDrawArrays( GL_TRIANGLES, 0, 16 ); 
+  }
 }
 
 void BezierPatch :: applyMaterial(vec3 diffuse, vec3 ambient, vec3 specular, GLfloat shininess) {
@@ -157,7 +144,7 @@ void BezierPatch :: changeShader(int shader) {
 
     glUseProgram( activeProgram );
 
-    glBindVertexArray( vao );
+    glBindVertexArray( vaoVertices );
 
     GLuint point = glGetAttribLocation( activeProgram, "vPoint" );
     glVertexAttribPointer( point, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0) );
@@ -165,11 +152,11 @@ void BezierPatch :: changeShader(int shader) {
 
     GLuint normal = glGetAttribLocation( activeProgram, "vNormal" );
     glVertexAttribPointer( normal, 3, GL_FLOAT, GL_FALSE, 0, 
-                         BUFFER_OFFSET(_vertices.size() * sizeof(vec3)) );
+                         BUFFER_OFFSET(_resolution * _resolution) );
     glEnableVertexAttribArray( normal );
 
-    uBezierPatchView = glGetUniformLocation( controlPointProgram, "modelView" );
-    uProjection = glGetUniformLocation( controlPointProgram, "projection" );;
+    uModelView = glGetUniformLocation( activeProgram, "modelView" );
+    uProjection = glGetUniformLocation( activeProgram, "projection" );;
     uLightPosition = glGetUniformLocation( activeProgram, "lightPosition" );
     uDiffuse = glGetUniformLocation( activeProgram, "diffuse" );
     uAmbient = glGetUniformLocation( activeProgram, "ambient" );
@@ -254,6 +241,18 @@ void BezierPatch::changePointBy(GLfloat dx, GLfloat dy, GLfloat dz) {
     _controlPoints[_selectedPoint] += vec3(dx, dy, dz);
 }
 
+void BezierPatch::changeResolution(GLint resolution) {
+    _resolution = resolution;
+    recalculateVertices();
+}
+
+void BezierPatch::recalculateVerticss() {
+    free(_vertices);
+    free(_normals);
+
+    
+}
+
 void BezierPatch::Initialize() {
   phongProgram = InitShader( "vBezierPatchShaderPhong.glsl", "fBezierPatchShaderPhong.glsl" );
   glBindFragDataLocation( phongProgram, 0, "outColor" );
@@ -269,8 +268,11 @@ void BezierPatch::Initialize() {
 
   activeProgram = phongProgram;
 
-  uBezierPatchView = glGetUniformLocation( controlPointProgram, "modelView" );
-  uProjection = glGetUniformLocation( controlPointProgram, "projection" );;
+  uModelViewControlPoint = glGetUniformLocation( controlPointProgram, "modelView" );
+  uProjectionControlPoint = glGetUniformLocation( controlPointProgram, "projection" );;
+
+  uModelView = glGetUniformLocation( activeProgram, "modelView" );
+  uProjection = glGetUniformLocation( activeProgram, "projection" );;
   uLightPosition = glGetUniformLocation( activeProgram, "lightPosition" );
   uDiffuse = glGetUniformLocation( activeProgram, "diffuse" );
   uAmbient = glGetUniformLocation( activeProgram, "ambient" );
