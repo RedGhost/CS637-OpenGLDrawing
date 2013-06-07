@@ -19,8 +19,10 @@ uniform float shininess;
 
 in vec3 vPoint;
 in vec3 vNormal;
+in vec3 vTexCoords;
 
 out vec4 color;
+out vec3 texCoord;
 
 void
 main()
@@ -60,6 +62,8 @@ main()
     if( dot(L3, N) >= 0.0 ) {
         specular += vec4(Ks3*specular3, 1.0f);
     } 
+
+    texCoord = vTexCoords;
 
     gl_Position = projection * modelView * vec4(vPoint, 1.0f);
 

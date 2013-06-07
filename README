@@ -1,24 +1,27 @@
 CS637
 Mateusz Stankiewicz
-Assignment 6
+Assignment 7
 
-This program displays a the bounded bunny model for assignment 5.
+This program displays a the bounded bunny model for assignment 7.
 Here are the keys used to operate the program:
 Keys: 
-q - Increase camera height
-a - Decrease camera height
-w - Increase camera radius
-s - Decrease camera radius
-e - Increase camera speed
-d - Decrease camera speed
-r - Increase light height
-f - Decrease light height
-t - Increase light radius
-g - Decrease light radius
-y - Increase light speed
-h - Decrease light speed
+Arrow keys - Navigate between control points
+q - Increase x-value of control point
+a - Decrease x-value of control point
+w - Increase y-value of control point
+s - Decrease y-value of control point
+e - Increase z-value of control point
+d - Decrease z-value of control point
+y - Increase camera height
+h - Decrease camera height
+u - Increase camera radius
+j - Decrease camera radius
+i - Increase rotation around the y-axis
+k - Decrease rotation around the y-axis
+o - Increase resolution by 5 (Max 50)
+l - Decrease resolution by 5 (Min 5)
 Mouse: 
-Right click to access the projection, camera start/stop menu, materials, and shading menus
+Right click to access the materials and shading menus
 
 To compile and run the program:
 make

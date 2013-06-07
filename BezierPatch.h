@@ -8,10 +8,8 @@
 
 class BezierPatch {
 public:
-    static GLuint phongProgram;
-    static GLuint flatProgram;
     static GLuint controlPointProgram;
-    static GLuint activeProgram;
+    static GLuint program;
     static GLint uModelViewControlPoint;
     static GLint uProjectionControlPoint;
     static GLint uModelView;
@@ -22,6 +20,7 @@ public:
     static GLint uShininess;
     static GLint uLightPosition;
     static GLint uEyePosition;
+    static GLint uTexture;
 
     BezierPatch();
 
@@ -30,7 +29,7 @@ public:
     virtual void initialize();
     virtual void draw(mat4 modelView, mat4 projection, vec4 eyePosition, vec4 lightPosition, vec3 diffuse, vec3 ambient, vec3 specular) ;
     virtual void applyMaterial(vec3 diffuse, vec3 ambient, vec3 specular, GLfloat shininess);
-    virtual void changeShader(int shader);
+    virtual void applyTexture(GLuint textureID);
 
     virtual void selectPointToLeft();
     virtual void selectPointToRight();
@@ -38,17 +37,23 @@ public:
     virtual void selectPointToDown();
     virtual void changePointBy(GLfloat dx, GLfloat dy, GLfloat dz);
     virtual void changeResolution(GLint resolution);
+    virtual void changeResolutionBy(GLint resolution);
 
     static void Initialize();
     static void Deinitialize();
 
 private:
     void recalculateVertices();
+    float b(int index, float u);
 
     GLint _currentPoint;
+    GLuint _textureID;
     std::vector< std::vector< vec3 > > _normalGeneration;
     vec3 _controlPoints[16];
-    std::vector<GLuint> _faces;
+    GLuint * _faces;
+    vec3 * _vertices;
+    vec3 * _normals;
+    vec2 * _texCoords;
 
     bool _initialized;
     GLuint vboControlPoints, vboVertices, vaoControlPoints, vaoVertices, eboVertices;
@@ -56,8 +61,6 @@ private:
     GLint _selectedPoint;
     GLfloat _shininess;
     GLint _resolution;
-    vec3 * _vertices;
-    vec3 * _normals;
 };
 
 #endif
