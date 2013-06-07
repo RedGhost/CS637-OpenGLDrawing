@@ -243,7 +243,7 @@ main( int argc, char **argv )
 
     glewExperimental=GL_TRUE; 
 
-    mainWindow = glutCreateWindow( "Assignment 7" );
+    mainWindow = glutCreateWindow( "Assignment 9 part 1" );
     glewInit();   
 
     glEnable(GL_DEPTH_TEST); 

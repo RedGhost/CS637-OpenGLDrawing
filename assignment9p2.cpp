@@ -408,7 +408,7 @@ main( int argc, char **argv )
 {
     printf("USAGE:\n");
     printf("To run this program type %s\n", argv[0]);
-    printf("The program opens one window and draws the shapes required for assignment 5.\n");
+    printf("The program opens one window and draws the shapes required for assignment 9 part 2.\n");
     printf("Keys: \n");
     printf("q - Increase camera height\n");
     printf("a - Decrease camera height\n");
@@ -441,7 +441,7 @@ main( int argc, char **argv )
 
     glewExperimental=GL_TRUE; 
 
-    mainWindow = glutCreateWindow( "Assignment 6" );
+    mainWindow = glutCreateWindow( "Assignment 9 part 2" );
     glewInit();   
 
     glEnable(GL_DEPTH_TEST); 

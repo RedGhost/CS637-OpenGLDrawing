@@ -1,9 +1,12 @@
 CS637
 Mateusz Stankiewicz
-Assignment 7
+Assignment 9
 
-This program displays a the bounded bunny model for assignment 7.
-Here are the keys used to operate the program:
+This program displays the bezier patch and bounded bunny model for assignment 9.
+
+For part 1: 
+make run-p1 - will run the first part
+
 Keys: 
 Arrow keys - Navigate between control points
 q - Increase x-value of control point
@@ -18,18 +21,48 @@ u - Increase camera radius
 j - Decrease camera radius
 i - Increase rotation around the y-axis
 k - Decrease rotation around the y-axis
-o - Increase resolution by 5 (Max 50)
-l - Decrease resolution by 5 (Min 5)
+o - Increase resolution by 1 (Max 20)
+l - Decrease resolution by 1 (Min 1)
+esc - Quit application
 Mouse: 
-Right click to access the materials and shading menus
+Right click to access the materials
+Light Positions: 
+There is one light at the position of the camera with diffuse (0.5, 0.5, 0.5) ambient (0.2, 0.2, 0.2) specular (0.5, 0.5, 0.5)
+Materials: 
+Pink Material: Diffuse (1.0, 0.8, 0.0) Ambient (1.0, 0.0, 1.0) Specular (1.0, 0.0, 1.0) Shininess 5.0 
+Blue Latex Material: Diffuse (0.0, 0.8, 0.0) Ambient (0.0, 0.0, 0.5) Specular (0.0, 0.0, 1.0) Shininess 50.0 
+Stone Material: Diffuse (0.2, 0.2, 0.2) Ambient (0.5, 0.5, 0.5) Specular (0.8, 0.8, 0.8) Shininess 10.0 
+NOTE: The bezier patch should have a checkerboard pattern applied to it. 
+NOTE: press escape to quit, killing the process will make the makefile not run part 2. 
 
-To compile and run the program:
-make
+For part 2:
+make run-p2 - will run the second part
 
-Note: If the program complains go to the Common directory and type ./Compile to create the InitShader.o object
-
-To execute the program:
-make run
+Keys: 
+q - Increase camera height
+a - Decrease camera height
+w - Increase camera radius
+s - Decrease camera radius
+e - Increase camera speed
+d - Decrease camera speed
+r - Increase light height
+f - Decrease light height
+t - Increase light radius
+g - Decrease light radius
+y - Increase light speed
+h - Decrease light speed
+Mouse: 
+Right click to access the projection, camera start/stop menu, materials, and shading menus
+Light Positions: 
+Static Light 1: At ( 0.0, 2.0, 0.0) diffuse (0.5, 0.5, 0.5) ambient (0.2, 0.2, 0.2) specular (0.5, 0.5, 0.5)
+Static Light 2: At ( 0.0, -2.0, 0.0) diffuse (0.5, 0.5, 0.5) ambient (0.2, 0.2, 0.2) specular (0.5, 0.5, 0.5)
+Dynamic Light: Starts At ( 0.0, 0.0, 2.0) Rotates At Start At 0.1f diffuse (0.5, 0.5, 0.5) ambient (0.2, 0.2, 0.2) specular (0.5, 0.5, 0.5)
+Materials: 
+White Material: Diffuse (1.0, 1.0, 1.0) Ambient (1.0, 1.0, 1.0) Specular (1.0, 1.0, 1.0) Shininess 5.0 
+Blue Latex Material: Diffuse (0.0, 0.8, 0.0) Ambient (0.0, 0.0, 0.5) Specular (0.0, 0.0, 1.0) Shininess 50.0 
+Stone Material: Diffuse (0.2, 0.2, 0.2) Ambient (0.5, 0.5, 0.5) Specular (0.8, 0.8, 0.8) Shininess 10.0 
+Note: The bunny should be textured with a cloud-like pattern. You can change the material but the cloud 
+pattern looks best on the pure white material. 
 
 To clean:
 make clean
